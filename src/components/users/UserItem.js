@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
+// Taking user from the prop and destructuring 3 items for use
 const UserItem = ({ user: { login, avatar_url, html_url } }) => {
 	return (
 		<div className="card text-center">
