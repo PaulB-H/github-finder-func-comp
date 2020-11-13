@@ -41,7 +41,7 @@ export class User extends Component {
 
 		return (
 			<Fragment>
-				<Link to="/" className="btn btn-light">
+				<Link to="/github-finder" className="btn btn-light">
 					Back to search
 				</Link>
 				Hireable{" "}
