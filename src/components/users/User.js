@@ -60,6 +60,7 @@ const User = ({ user, loading, getUser, getUserRepos, repos, match }) => {
 					<img
 						src={avatar_url}
 						className="round-img"
+						alt={name + "'s avatar"}
 						style={{ width: "150px" }}
 					/>
 					<h1>{name}</h1>
