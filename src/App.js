@@ -19,6 +19,7 @@ class App extends Component {
 	};
 
 	async componentDidMount() {
+		// console.log();
 		this.setState({ loading: true });
 
 		const res = await axios.get(
