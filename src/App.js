@@ -22,9 +22,22 @@ class App extends Component {
 		// console.log();
 		this.setState({ loading: true });
 
-		const res = await axios.get(
-			`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-		);
+		// See Notice: Github API - Query Params Depreciated
+		// https://developer.github.com/v3/#oauth2-keysecret
+		// FIX: Using an OAuth Token for rate limit increase
+		// Create Personal OAuth token with no scopes, no need for OAuth App
+		// https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
+		// Old request
+		// const res = await axios.get(
+		// 	`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+		// );
+
+		const res = await axios.get(`https://api.github.com/users`, {
+			headers: {
+				"User-Agent": "PaulB-H",
+				Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+			},
+		});
 
 		this.setState({ users: res.data, loading: false });
 	}
@@ -34,7 +47,13 @@ class App extends Component {
 	searchUsers = async (text) => {
 		this.setState({ loading: true });
 		const res = await axios.get(
-			`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+			`https://api.github.com/search/users?q=${text}`,
+			{
+				headers: {
+					"User-Agent": "PaulB-H",
+					Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+				},
+			}
 		);
 
 		this.setState({ users: res.data.items, loading: false });
@@ -45,7 +64,13 @@ class App extends Component {
 		this.setState({ loading: true });
 
 		const res = await axios.get(
-			`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+			`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc`,
+			{
+				headers: {
+					"User-Agent": "PaulB-H",
+					Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+				},
+			}
 		);
 
 		this.setState({ repos: res.data, loading: false });
@@ -55,9 +80,12 @@ class App extends Component {
 	getUserRepos = async (username) => {
 		this.setState({ loading: true });
 
-		const res = await axios.get(
-			`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-		);
+		const res = await axios.get(`https://api.github.com/users/${username}`, {
+			headers: {
+				"User-Agent": "PaulB-H",
+				Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+			},
+		});
 
 		this.setState({ user: res.data, loading: false });
 	};
