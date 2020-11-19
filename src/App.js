@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Users from "./components/users/Users";
@@ -9,43 +9,16 @@ import About from "./components/pages/About";
 import axios from "axios";
 import "./App.css";
 
-class App extends Component {
-	state = {
-		users: [],
-		user: {},
-		repos: [],
-		loading: false,
-		alert: null,
-	};
-
-	async componentDidMount() {
-		// console.log();
-		this.setState({ loading: true });
-
-		// See Notice: Github API - Query Params Depreciated
-		// https://developer.github.com/v3/#oauth2-keysecret
-		// FIX: Using an OAuth Token for rate limit increase
-		// Create Personal OAuth token with no scopes, no need for OAuth App
-		// https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
-		// Old request
-		// const res = await axios.get(
-		// 	`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-		// );
-
-		const res = await axios.get(`https://api.github.com/users`, {
-			headers: {
-				"User-Agent": "PaulB-H",
-				Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
-			},
-		});
-
-		this.setState({ users: res.data, loading: false });
-	}
+const App = () => {
+	const [users, setUsers] = useState([]);
+	const [user, setUser] = useState({});
+	const [repos, setRepos] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [alert, setAlert] = useState(null);
 
 	// Search Github users
-	// We add ASYNC before the param since this is an arrow function
-	searchUsers = async (text) => {
-		this.setState({ loading: true });
+	const searchUsers = async (text) => {
+		setLoading(true);
 		const res = await axios.get(
 			`https://api.github.com/search/users?q=${text}`,
 			{
@@ -56,12 +29,30 @@ class App extends Component {
 			}
 		);
 
-		this.setState({ users: res.data.items, loading: false });
+		setUsers(res.data.items);
+		setLoading(false);
 	};
 
+	// Load initial users
+	useEffect(() => {
+		setLoading(true);
+		async function fetchData() {
+			// You can await here
+			const res = await axios.get(`https://api.github.com/users`, {
+				headers: {
+					"User-Agent": "PaulB-H",
+					Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+				},
+			});
+			setUsers(res.data);
+			setLoading(false);
+		}
+		fetchData();
+	}, []);
+
 	// Get a single Github user
-	getUser = async (username) => {
-		this.setState({ loading: true });
+	const getUser = async (username) => {
+		setLoading(true);
 
 		const res = await axios.get(
 			`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc`,
@@ -73,12 +64,13 @@ class App extends Component {
 			}
 		);
 
-		this.setState({ repos: res.data, loading: false });
+		setUser(res.data);
+		setLoading(false);
 	};
 
 	// Get users repos
-	getUserRepos = async (username) => {
-		this.setState({ loading: true });
+	const getUserRepos = async (username) => {
+		setLoading(true);
 
 		const res = await axios.get(`https://api.github.com/users/${username}`, {
 			headers: {
@@ -87,67 +79,67 @@ class App extends Component {
 			},
 		});
 
-		this.setState({ user: res.data, loading: false });
+		setRepos(res.data);
+		setLoading(false);
 	};
 
 	// Clear users from state
-	clearUsers = () => this.setState({ users: [], loading: false });
+	const clearUsers = () => {
+		setUsers([]);
+		setLoading(false);
+	};
 
 	// Set alert
 
-	setAlert = (msg, type) => {
+	const showAlert = (msg, type) => {
 		// Same as { msg: msg, type: type }
-		this.setState({ alert: { msg, type } });
-		setTimeout(() => this.setState({ alert: null }), 5000);
+		setAlert({ msg, type });
+		setTimeout(() => setAlert(null), 5000);
 	};
 
-	render() {
-		const { user, users, repos, loading } = this.state;
-
-		return (
-			<Router>
-				<div className="App">
-					<Navbar />
-					<div className="container">
-						<Alert alert={this.state.alert} />
-						<Switch>
-							<Route
-								// exact
-								path="/github-finder"
-								render={(props) => (
-									<Fragment>
-										<Search
-											searchUsers={this.searchUsers}
-											clearUsers={this.clearUsers}
-											showClear={users.length > 0 ? true : false}
-											setAlert={this.setAlert}
-										/>
-										<Users loading={loading} users={users} />
-									</Fragment>
-								)}
-							/>
-							{/* When you pass in a component to a route like below you cannot pass in props */}
-							<Route exact path="/about" component={About} />
-							<Route
-								exact
-								path="/users/:login"
-								render={(props) => (
-									<User
-										{...props}
-										getUser={this.getUser}
-										getUserRepos={this.getUserRepos}
-										user={user}
-										repos={repos}
-										loading={loading}
+	return (
+		<Router>
+			<div className="App">
+				<Navbar />
+				<div className="container">
+					<Alert alert={alert} />
+					<Switch>
+						<Route
+							// exact
+							path="/github-finder"
+							render={(props) => (
+								<Fragment>
+									<Search
+										searchUsers={searchUsers}
+										clearUsers={clearUsers}
+										showClear={users.length > 0 ? true : false}
+										setAlert={showAlert}
 									/>
-								)}
-							/>
-						</Switch>
-					</div>
+									<Users loading={loading} users={users} />
+								</Fragment>
+							)}
+						/>
+						{/* When you pass in a component to a route like below you cannot pass in props */}
+						<Route exact path="/about" component={About} />
+						<Route
+							exact
+							path="/users/:login"
+							render={(props) => (
+								<User
+									{...props}
+									getUser={getUser}
+									getUserRepos={getUserRepos}
+									user={user}
+									repos={repos}
+									loading={loading}
+								/>
+							)}
+						/>
+					</Switch>
 				</div>
-			</Router>
-		);
-	}
-}
+			</div>
+		</Router>
+	);
+};
 
 export default App;
