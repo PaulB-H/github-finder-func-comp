@@ -378,7 +378,7 @@ table th {
 }
 
 /* Mobile Styles */
-@media (max-width: 700px) {
+@media screen and (max-width: 700px) {
 	.hide-sm {
 		display: none;
 	}
@@ -411,5 +411,21 @@ table th {
 	.navbar ul {
 		text-align: center;
 		justify-content: center;
+	}
+
+	.container div:nth-child(2) {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.card {
+		padding: 0 !important;
+	}
+	.container {
+		padding: 0 !important;
+	}
+	.container div:nth-child(2) {
+		gap: 0 !important;
 	}
 }

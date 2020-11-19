@@ -16,23 +16,6 @@ const App = () => {
 	const [loading, setLoading] = useState(false);
 	const [alert, setAlert] = useState(null);
 
-	// Search Github users
-	const searchUsers = async (text) => {
-		setLoading(true);
-		const res = await axios.get(
-			`https://api.github.com/search/users?q=${text}`,
-			{
-				headers: {
-					"User-Agent": "PaulB-H",
-					Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
-				},
-			}
-		);
-
-		setUsers(res.data.items);
-		setLoading(false);
-	};
-
 	// Load initial users
 	useEffect(() => {
 		setLoading(true);
@@ -49,6 +32,23 @@ const App = () => {
 		}
 		fetchData();
 	}, []);
+
+	// Search Github users
+	const searchUsers = async (text) => {
+		setLoading(true);
+		const res = await axios.get(
+			`https://api.github.com/search/users?q=${text}`,
+			{
+				headers: {
+					"User-Agent": "PaulB-H",
+					Authorization: "token " + process.env.REACT_APP_GITHUB_OATH_TOKEN,
+				},
+			}
+		);
+
+		setUsers(res.data.items);
+		setLoading(false);
+	};
 
 	// Get a single Github user
 	const getUser = async (username) => {
