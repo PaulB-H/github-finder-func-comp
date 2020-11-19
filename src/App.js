@@ -29,6 +29,7 @@ const App = () => {
 			});
 			setUsers(res.data);
 			setLoading(false);
+			console.log("Hello Kenobi");
 		}
 		fetchData();
 	}, []);
@@ -106,7 +107,7 @@ const App = () => {
 					<Switch>
 						<Route
 							// exact
-							path="/github-finder"
+							path="/github-finder-func-comp"
 							render={(props) => (
 								<Fragment>
 									<Search

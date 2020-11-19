@@ -12,7 +12,7 @@ const Navbar = ({ icon, title }) => {
 			</h1>
 			<ul>
 				<li>
-					<Link to="/github-finder">Home</Link>
+					<Link to="/github-finder-func-comp">Home</Link>
 				</li>
 				<li>
 					<Link to="/about">About</Link>
